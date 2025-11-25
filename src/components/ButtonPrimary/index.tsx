@@ -1,8 +1,17 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
+import { styles } from './styles';
 
 interface ButtonPrimaryProps {
-};
+  title: string;
+  onPress: () => void;
+}
 
-// Parte da Amanda Francisco
+export function ButtonPrimary({ title, onPress }: ButtonPrimaryProps) {
+  return (
+    <TouchableOpacity style={styles.button} onPress={onPress}>
+      <Text style={styles.text}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
 
