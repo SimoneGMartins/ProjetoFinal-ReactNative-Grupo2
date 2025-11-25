@@ -8,7 +8,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 12
+    marginBottom: 12,
+    color: '#a10404ff',
   },
   player: {
     fontSize: 20,
