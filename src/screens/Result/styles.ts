@@ -26,12 +26,18 @@ export const styles = StyleSheet.create({
 
   subtitle: {
     fontSize: 20,
-    color: '#FF0000',
+    color: '#ff9d00ff',
     marginBottom: 30,
     textAlign: 'center',
     fontWeight: 'bold',
   },
-
+ resultContainer: {
+        backgroundColor: '#5196347b',
+        borderRadius: 14,
+        padding: 16,
+        flex: 1,
+        marginBottom: 80,
+    },
   card: {
     width: '80%',
     borderRadius: 14,
