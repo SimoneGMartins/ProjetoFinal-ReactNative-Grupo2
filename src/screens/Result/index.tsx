@@ -1,17 +1,9 @@
 import React from 'react';
-<<<<<<< Updated upstream
-import { View, Text, Button, StyleSheet } from 'react-native';
-//import from '../context/QuizContext';//
-
-export default function ResultScreen({ route, navigation }: any) {
-  const { score, playerName } = route.params; //  nome e pontuação
-=======
 import { View, Text, TouchableOpacity,  } from 'react-native';
 import { styles } from './styles';
 
 export default function ResultScreen({ route, navigation }: any) {
   const { score, playerName } = route.params;
->>>>>>> Stashed changes
 
   const handleSave = async () => {
     const newRecord = {
@@ -21,24 +13,11 @@ export default function ResultScreen({ route, navigation }: any) {
     };
 
     try {
-<<<<<<< Updated upstream
-      await fetch(
-        "https://690a7b0d1a446bb9cc22a902.mockapi.io/Registro_Pontuacao",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newRecord),
-        }
-      );
-=======
       await fetch("https://690a7b0d1a446bb9cc22a902.mockapi.io/Registro_Pontuacao", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newRecord),
       });
->>>>>>> Stashed changes
 
       navigation.navigate("Ranking");
     } catch (error) {
@@ -47,28 +26,6 @@ export default function ResultScreen({ route, navigation }: any) {
   };
 
   return (
-<<<<<<< Updated upstream
-    <View style={styles.container}>
-      <Text style={styles.title}>Resultado</Text>
-
-      <Text style={styles.player}>Jogador: {playerName}</Text>
-
-      <Text style={styles.score}>Você fez {score} pontos!</Text>
-
-      <Button title="Salvar Pontuação" onPress={handleSave} />
-
-      <View style={{ height: 20 }} />
-
-      <Button
-        title="Ir para Ranking"
-        onPress={() => navigation.navigate("Ranking")}
-      />
-    </View>
-  );
-}
-
-
-=======
    
       <View style={styles.container}>
 
@@ -101,4 +58,3 @@ export default function ResultScreen({ route, navigation }: any) {
     
   );
 }
->>>>>>> Stashed changes

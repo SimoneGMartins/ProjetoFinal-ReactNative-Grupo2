@@ -1,22 +1,87 @@
-const styles = StyleSheet.create({
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+
   container: {
     flex: 1,
-    justifyContent: 'center',
+    padding: 20,
     alignItems: 'center',
-    padding: 20
+    justifyContent: 'flex-start',
+    paddingTop: 80,
   },
+
   title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: '#a10404ff',
-  },
-  player: {
+  fontSize: 45,
+  fontFamily: 'MountainsofChristmas_700Bold',
+  marginBottom: 8,
+  color: '#ff9d00ff',
+  textShadowColor: '#8B4513',
+  textShadowOffset: { width: -2, height: 2 },
+  textShadowRadius: 1,
+   },
+
+  subtitle: {
     fontSize: 20,
-    marginBottom: 10
+    color: '#FF0000',
+    marginBottom: 30,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
-  score: {
+
+  card: {
+    width: '80%',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 40,
+    backgroundColor: 'rgba(0,0,0,0.0)', 
+  },
+
+  cardTitle: {
+    fontSize: 24,
+    color: '#FF0000',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+
+  scoreRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#154d1aff',
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+
+  scoreLabel: {
     fontSize: 20,
-    marginBottom: 20
-  }
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+
+  scoreValue: {
+    fontSize: 22,
+    color: '#FFB300', 
+    fontWeight: 'bold',
+  },
+
+  button: {
+    width: '75%',
+    backgroundColor: '#154d1aff',
+    padding: 18,
+    borderRadius: 14,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
