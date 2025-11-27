@@ -3,6 +3,9 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import QuestionCard from '../../components/QuestionCard';
 import { styles } from './styles';
 
+import { getGeminiQuestions } from '../../api/gemini';
+import { getHardQuestion } from '../../api/trivia';
+
 type NavigationProp = any;
 
 function shuffle<T>(arr: T[]) {
@@ -31,16 +34,17 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
 
     async function load() {
       try {
-        const res = await fetch('https://tryvia.ptr.red/api.php?amount=10');
-        const data = await res.json();
+        const geminiQuestions = await getGeminiQuestions();
+        const hardQuestion = await getHardQuestion();
 
-        const formatted = data.results.map((item: any) => {
+        const allQuestions = [...geminiQuestions, hardQuestion];
 
-          const opts = shuffle([...item.incorrect_answers, item.correct_answer]);
+        const formatted = allQuestions.map(q => {
+          const opts = shuffle([...q.options]);
           return {
-            question: item.question,
+            ...q,
             options: opts,
-            answer: opts.indexOf(item.correct_answer),
+            answer: opts.indexOf(q.options[q.answer])
           };
         });
 
@@ -50,16 +54,12 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
         }
       } catch (err) {
         console.warn('Erro ao carregar perguntas:', err);
-        if (mounted) {
-          setLoading(false);
-        }
+        if (mounted) setLoading(false);
       }
     }
 
     load();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false };
   }, []);
 
   function handleSelect(optionIndex: number) {
@@ -67,7 +67,8 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
 
     setSelectedOption(optionIndex);
 
-    if (optionIndex === current.answer) {
+    const isCorrect = optionIndex === current.answer;
+    if (isCorrect) {
       setScore(prev => prev + 1);
     }
 
@@ -76,34 +77,35 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
         setIndex(prev => prev + 1);
         setSelectedOption(null);
       } else {
-        navigation.navigate('Result', { score });
+        const finalScore = isCorrect ? score + 1 : score;
+        navigation.navigate('Result', { score: finalScore });
       }
     }, 1000);
   }
 
   if (loading) {
-  return (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#ff9d00" />
-      <Text style={styles.loadingText}>Carregando perguntas...</Text>
-    </View>
-  );
-}
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ff9d00" />
+        <Text style={styles.loadingText}>Carregando perguntas...</Text>
+      </View>
+    );
+  }
 
   if (!current) {
-  return (
-    <View style={[styles.loadingContainer, { padding: 20 }]}>
-      <Text style={styles.errorText}>
-        Não foi possível carregar perguntas. Tente novamente mais tarde.
-      </Text>
-    </View>
-  );
-}
-
     return (
+      <View style={[styles.loadingContainer, { padding: 20 }]}>
+        <Text style={styles.errorText}>
+          Não foi possível carregar perguntas. Tente novamente mais tarde.
+        </Text>
+      </View>
+    );
+  }
+
+  return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Bem vindo ao Quiz!</Text>
+        <Text style={styles.title}>Que comece o Quiz!</Text>
       </View>
 
       <Text style={styles.progressText}>
