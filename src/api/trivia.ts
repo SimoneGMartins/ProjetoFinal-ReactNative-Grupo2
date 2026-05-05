@@ -1,4 +1,5 @@
 import { GEMINI_API_KEY } from "@env";
+import { getRandomFallbackQuestions } from "./fallbackQuestions";
 
 export interface TriviaQuestion {
   question: string;
@@ -7,15 +8,6 @@ export interface TriviaQuestion {
 }
 
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 export async function getHardQuestion(): Promise<TriviaQuestion> {
   try {
@@ -41,24 +33,24 @@ Sem markdown, sem texto extra, apenas o JSON puro.`;
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error Details:', errorText);
-      throw new Error(`Erro API: ${response.status} - ${errorText}`);
+      console.warn(`⚠️ [Trivia] API retornou erro ${response.status}. Usando pergunta local...`);
+      return getRandomFallbackQuestions(1)[0];
     }
 
     const data = await response.json();
     const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!textResponse) {
-      console.error('No text in response. Full data:', data);
-      throw new Error('Formato de resposta inválido');
+      console.warn('⚠️ [Trivia] Resposta sem conteúdo. Usando pergunta local...');
+      return getRandomFallbackQuestions(1)[0];
     }
 
     const jsonText = textResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const rawQuestions = JSON.parse(jsonText);
 
     if (!Array.isArray(rawQuestions) || rawQuestions.length === 0) {
-      throw new Error('Formato de perguntas inválido');
+      console.warn('⚠️ [Trivia] Formato inválido. Usando pergunta local...');
+      return getRandomFallbackQuestions(1)[0];
     }
 
     const item = rawQuestions[0];
@@ -74,13 +66,15 @@ Sem markdown, sem texto extra, apenas o JSON puro.`;
 
     const correctIndex = options.indexOf(correctAnswer);
 
+    console.log('✅ [Trivia] Pergunta carregada da API com sucesso!');
+
     return {
       question: questionText,
       options: options,
       answer: correctIndex,
     };
   } catch (error) {
-    console.error('Erro ao buscar pergunta difícil:', error);
-    throw error;
+    console.warn('⚠️ [Trivia] Não foi possível conectar à API. Usando pergunta local...');
+    return getRandomFallbackQuestions(1)[0];
   }
 }

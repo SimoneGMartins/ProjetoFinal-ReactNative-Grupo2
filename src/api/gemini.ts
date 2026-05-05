@@ -1,6 +1,8 @@
 import { GEMINI_API_KEY } from "@env";
+import { getRandomFallbackQuestions } from "./fallbackQuestions";
 
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
 export interface Question {
   question: string;
   options: string[];
@@ -21,10 +23,6 @@ Sem markdown, sem texto extra, apenas o JSON puro.`;
 export async function getGeminiQuestions(): Promise<Question[]> {
   try {
     console.log('GEMINI_API_KEY loaded:', GEMINI_API_KEY ? 'Yes' : 'No');
-    if (GEMINI_API_KEY) {
-      console.log('Key length:', GEMINI_API_KEY.length);
-      console.log('Key start:', GEMINI_API_KEY.substring(0, 4));
-    }
 
     const response = await fetch(GEMINI_API_URL, {
       method: 'POST',
@@ -41,26 +39,27 @@ export async function getGeminiQuestions(): Promise<Question[]> {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error Details:', errorText);
-      throw new Error(`Erro API: ${response.status} - ${errorText}`);
+      console.warn(`⚠️ Gemini API retornou erro ${response.status}. Usando perguntas locais...`);
+      return getRandomFallbackQuestions(5);
     }
 
     const data = await response.json();
-    console.log('Raw API response:', JSON.stringify(data, null, 2));
     const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!textResponse) {
-      console.error('No text in response. Full data:', data);
-      throw new Error('Formato de resposta inválido');
+      console.warn('⚠️ Resposta da API sem conteúdo. Usando perguntas locais...');
+      return getRandomFallbackQuestions(5);
     }
-    console.log('Text response from API:', textResponse);
+
     const jsonText = textResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const rawQuestions = JSON.parse(jsonText);
 
     if (!Array.isArray(rawQuestions)) {
-      throw new Error('Formato de perguntas inválido');
+      console.warn('⚠️ Formato de resposta inválido. Usando perguntas locais...');
+      return getRandomFallbackQuestions(5);
     }
+
+    console.log('✅ Perguntas carregadas da API Gemini com sucesso!');
 
     return rawQuestions.map((item: any) => {
       const questionText = item[0];
@@ -82,8 +81,7 @@ export async function getGeminiQuestions(): Promise<Question[]> {
     });
 
   } catch (error) {
-    console.error('Erro ao buscar perguntas:', error);
-    throw error;
+    console.warn('⚠️ Não foi possível conectar à API. Usando perguntas locais...');
+    return getRandomFallbackQuestions(5);
   }
 }
-

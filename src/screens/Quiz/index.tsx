@@ -26,6 +26,7 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
   const [index, setIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   const current = questions[index] || null;
 
@@ -34,6 +35,8 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
 
     async function load() {
       try {
+        // getGeminiQuestions e getHardQuestion agora nunca lançam exceção —
+        // retornam perguntas de fallback automaticamente se a API falhar.
         const geminiQuestions = await getGeminiQuestions();
         const hardQuestion = await getHardQuestion();
 
@@ -54,7 +57,14 @@ export default function QuizScreen({ navigation }: { navigation: NavigationProp 
         }
       } catch (err) {
         console.warn('Erro ao carregar perguntas:', err);
-        if (mounted) setLoading(false);
+        // Fallback final — se tudo falhar, usar perguntas locais diretamente
+        if (mounted) {
+          const { getRandomFallbackQuestions } = require('../../api/fallbackQuestions');
+          const fallback = getRandomFallbackQuestions(6);
+          setQuestions(fallback);
+          setUsingFallback(true);
+          setLoading(false);
+        }
       }
     }
 

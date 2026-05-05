@@ -1,9 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
+import HomeScreen from '../../screens/Home';
+import RankingScreen from '../../screens/Ranking';
 import QuizScreen from '../../screens/Quiz';
 import ResultScreen from '../../screens/Result';
-import TabNavigator from '../tabs/TabNavigator';
 import { stackStyles, headerTintColor } from './styles';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -11,7 +12,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function StackNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="MainTabs"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: true,
         headerStyle: stackStyles.headerStyle,
@@ -21,8 +22,13 @@ export default function StackNavigator() {
       }}
     >
       <Stack.Screen
-        name="MainTabs"
-        component={TabNavigator}
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Ranking"
+        component={RankingScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
